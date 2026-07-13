@@ -1,98 +1,204 @@
-# Ledgerlens
+# 🚀 LedgerLens – Blockchain-Assisted Secure Remote Sensing Image Retrieval
 
-A MERN-stack reference implementation of the report **"Blockchain-Assisted Verifiable and
-Secure Remote Sensing Image Retrieval in Cloud Environments Using Homomorphic Encryption and
-Federated Learning."**
+A full-stack MERN application that demonstrates **secure image retrieval using Blockchain, Homomorphic Encryption simulation, and Federated Learning**. The project ensures image integrity through blockchain verification while enabling privacy-preserving image retrieval.
 
-It turns the report's four building blocks into a running app:
+## 🌐 Live Demo
 
-| Report concept | Where it lives |
-|---|---|
-| CNN feature extraction | `server/utils/featureExtractor.js` |
-| Homomorphic encryption (Algorithm 2) | `server/utils/simulatedHE.js`, `server/routes/query.js` |
-| Federated Averaging (Algorithm 1) | `server/utils/fedAvg.js`, `server/routes/federated.js` |
-| Blockchain audit logging (Algorithm 3) | `server/utils/blockchain.js`, `server/routes/blockchain.js` |
-| Key Management Center | `server/utils/simulatedHE.js` (`KeyManagementCenter`) |
+**Frontend:** https://image-retrieval-mu.vercel.app
 
-## Stack
+**Backend API:** https://image-retrieval-u936.onrender.com
 
-- **M**ongoDB (via Mongoose) — stores encrypted feature vectors, blockchain blocks, and
-  federated-round history.
-- **E**xpress — REST API (`/server`).
-- **R**eact + Vite — UI (`/client`), five screens: Overview, Index, Retrieve, Ledger, Federated.
-- **N**ode.js — runtime for both the API and the image feature pipeline (`sharp`).
+---
 
-## Getting it running locally
+## 📸 Screenshots
 
-You'll need Node.js 18+ and a MongoDB instance (local `mongod` or a free Atlas cluster).
+> Add screenshots here
+
+- Home Page
+- Image Indexing
+- Image Retrieval
+- Blockchain Ledger
+- Federated Learning Dashboard
+
+---
+
+## ✨ Features
+
+- 🔐 Secure image indexing
+- 🖼️ Image retrieval using encrypted feature vectors
+- ⛓️ Blockchain-based tamper detection
+- 🔍 Image integrity verification
+- 🤖 Federated Learning simulation
+- 🔑 Key Management Center
+- 📊 Blockchain Ledger visualization
+- ☁️ MongoDB Atlas database
+- 🚀 Fully deployed on Vercel & Render
+
+---
+
+## 🛠 Tech Stack
+
+### Frontend
+
+- React.js
+- Vite
+- Axios
+- CSS
+
+### Backend
+
+- Node.js
+- Express.js
+- MongoDB Atlas
+- Mongoose
+- Multer
+- Sharp
+
+### Deployment
+
+- Vercel
+- Render
+
+---
+
+## Project Architecture
+
+```
+client
+   │
+   ▼
+React + Vite
+   │
+Axios API
+   │
+   ▼
+Express Server
+   │
+──────────────────────────────
+│ Feature Extraction
+│ Homomorphic Encryption
+│ Blockchain
+│ Federated Learning
+──────────────────────────────
+   │
+MongoDB Atlas
+```
+
+---
+
+## Project Workflow
+
+### 1. Image Indexing
+
+- Upload image
+- Feature extraction
+- Homomorphic encryption
+- Store encrypted vector
+- Add blockchain record
+
+### 2. Image Retrieval
+
+- Upload query image
+- Feature extraction
+- Compare encrypted vectors
+- Return ranked images
+
+### 3. Blockchain Verification
+
+- Verify stored hash
+- Detect tampering
+- Validate blockchain integrity
+
+### 4. Federated Learning
+
+- Simulated local training
+- FedAvg aggregation
+- Global model update
+
+---
+
+## Folder Structure
+
+```
+image-retrieval
+│
+├── client
+│   ├── src
+│   ├── components
+│   ├── pages
+│   └── api.js
+│
+├── server
+│   ├── routes
+│   ├── models
+│   ├── utils
+│   ├── config
+│   └── server.js
+│
+└── README.md
+```
+
+---
+
+## Installation
+
+### Clone Repository
 
 ```bash
-# 1. Backend
-cd server
-cp .env.example .env      # edit MONGO_URI if you're not running Mongo on localhost
-npm install
-npm run dev                # starts on http://localhost:5000
+git clone https://github.com/khushahal0707/image-retrieval.git
+```
 
-# 2. Frontend (in a second terminal)
+### Backend
+
+```bash
+cd server
+npm install
+npm run dev
+```
+
+### Frontend
+
+```bash
 cd client
 npm install
-npm run dev                # starts on http://localhost:5173
+npm run dev
 ```
 
-Open `http://localhost:5173`. The Vite dev server proxies `/api` and `/uploads` to the Express
-server, so you don't need to configure CORS beyond the defaults in `.env.example`.
+---
 
-## Using the app
+## Environment Variables
 
-1. **Index** — upload a few images with labels. Each one is encoded into a 64-dim vector,
-   encrypted, and committed to the ledger as an `INDEX` block.
-2. **Retrieve** — upload a query image. The server ranks the encrypted database by cosine
-   similarity *without decrypting anything*, and logs a `QUERY` block. Click "Verify against
-   ledger" on any result to re-hash its stored ciphertext and compare it to the on-chain
-   commitment.
-3. **Ledger** — browse every block, and see the chain's overall integrity status (this
-   recomputes every hash and Merkle root from scratch).
-4. **Federated** — run FedAvg rounds across three simulated clients and watch per-client and
-   global loss converge, exactly matching Algorithm 1 in the report.
-5. Back on **Index**, hit "tamper" on any record, then re-run Retrieve → Verify on that same
-   record to see the ledger catch the mismatch.
+### Backend (.env)
 
-## Security notes (read before treating this as production-ready)
-
-This is a **teaching/demo implementation**, not a deployable secure system:
-
-- `simulatedHE.js` uses a distance-preserving translation cipher (add/subtract a fixed key
-  vector) rather than real CKKS homomorphic encryption. It demonstrates *why* the property
-  matters (the server can rank ciphertexts without decrypting them) without the overhead of a
-  real lattice-crypto library. To swap in real HE, replace this module with bindings to
-  [node-seal](https://github.com/s0l0ist/node-seal) (a WASM build of Microsoft SEAL, the same
-  family as the report's TenSEAL) and re-implement `encrypt`/`cosineSimilarity` against
-  ciphertext objects instead of arrays.
-- `featureExtractor.js` derives features from raw pixels via `sharp`, standing in for the
-  report's CNN encoder (ResNet/MobileNet). For real retrieval quality, replace it with a call
-  out to a Python microservice (PyTorch/TensorFlow) or an ONNX runtime model loaded in Node.
-- The blockchain in `blockchain.js` is an in-process, MongoDB-backed hash chain with Merkle
-  roots — it demonstrates tamper-evidence and auditability, but is not a consensus network. For
-  the report's actual target (a permissioned network like Hyperledger Fabric, or Ethereum via
-  Web3.py/Solidity as used in the original prototype), replace `appendBlock`/
-  `verifyChainIntegrity` with calls to a deployed smart contract.
-- The Key Management Center issues one shared key at boot and exposes it over
-  `GET /api/kmc/keys` purely so the UI can show what's happening. A real KMC would authenticate
-  clients and never expose key material over an unauthenticated endpoint.
-
-## Project layout
-
+```env
+PORT=5001
+MONGO_URI=YOUR_MONGODB_URI
+CLIENT_ORIGIN=http://localhost:5173
 ```
-server/
-  config/db.js            Mongo connection
-  models/                 ImageRecord, Block, FederatedRound
-  routes/                 images, query, blockchain, federated
-  utils/                  simulatedHE, featureExtractor, blockchain, fedAvg
-  server.js
-client/
-  src/
-    pages/                Home, IndexPage, Retrieve, Ledger, Federated
-    components/           Navbar, Pipeline
-    api.js                axios wrapper for the REST API
-    styles/index.css       design tokens (dark "telemetry console" theme)
-```
+
+---
+
+## Future Improvements
+
+- Real Homomorphic Encryption (Microsoft SEAL)
+- Cloudinary image storage
+- JWT Authentication
+- Docker Support
+- Kubernetes Deployment
+- CI/CD Pipeline
+
+---
+
+## Author
+
+**Khushahal Sahu**
+
+GitHub: https://github.com/khushahal0707
+
+LinkedIn: https://www.linkedin.com/in/khushahal-sahu-87125a324/
+
+---
+
+## License
+
+This project is developed for educational and research purposes.
