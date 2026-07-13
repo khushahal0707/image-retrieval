@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5001/api",
+  baseURL: "https://image-retrieval-u936.onrender.com/api",
 });
 
 export const getKeys = () => api.get("/kmc/keys").then((r) => r.data);
@@ -17,7 +17,7 @@ export const tamperImage = (id) =>
   api.post(`/images/${id}/tamper`).then((r) => r.data);
 
 export const imageFileUrl = (id) =>
-  `http://localhost:5001/api/images/${id}/file`;
+  `https://image-retrieval-u936.onrender.com/api/images/${id}/file`;
 
 export const runQuery = (formData) =>
   api.post("/query", formData, {
